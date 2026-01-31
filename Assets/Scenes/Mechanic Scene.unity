@@ -391,9 +391,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maskMaterial: {fileID: 0}
-  moveSpeed: 0.5
-  radius: 0.2
-  softness: 0.1
+  baseSpeed: 2000
+  acceleration: 30
+  deceleration: 50
+  turnResponsiveness: 40
+  maxSlideSpeed: 70
+  enableRandomForces: 1
+  randomForceInterval: 0.5
+  randomForceStrength: 0.01
+  lightRadius: 0.15
 --- !u!114 &382069030
 MonoBehaviour:
   m_ObjectHideFlags: 0
