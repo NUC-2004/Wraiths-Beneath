@@ -5,8 +5,7 @@ using System.Collections;
 public class RunawayMinecartEffect : MonoBehaviour
 {
     [Header("矿车失控设置")]
-    public float initialSpeed = 0.8f;       // 巨大的初速度
-    public Vector2 initialDirection = new Vector2(0.7f, 0.7f); // 初始方向
+    
     
     [Header("动量系统")]
     public float momentumGain = 0.1f;       // 按键时动量增加
@@ -46,10 +45,6 @@ public class RunawayMinecartEffect : MonoBehaviour
             }
         }
         
-        // 设置巨大初速度
-        currentDirection = initialDirection.normalized;
-        velocity = currentDirection * initialSpeed;
-        currentMomentum = initialSpeed;
         
         // 初始化位置为随机点
         position = new Vector2(0.3f, 0.3f);
@@ -70,11 +65,16 @@ public class RunawayMinecartEffect : MonoBehaviour
     
     void HandleMinecartControls()
     {
-        // 获取输入方向
-        Vector2 input = new Vector2(
-            Input.GetAxisRaw("Horizontal"),
-            Input.GetAxisRaw("Vertical")
-        );
+        float inputX = 0f;
+        float inputY = 0f;
+
+        // 检测方向键 (Arrow Keys)
+        if (Input.GetKey(KeyCode.RightArrow)) inputX += 1f;
+        if (Input.GetKey(KeyCode.LeftArrow))  inputX -= 1f;
+        if (Input.GetKey(KeyCode.UpArrow))    inputY += 1f;
+        if (Input.GetKey(KeyCode.DownArrow))  inputY -= 1f;
+
+        Vector2 input = new Vector2(inputX, inputY);
         
         if (input.magnitude > 0.1f)
         {
@@ -139,15 +139,15 @@ public class RunawayMinecartEffect : MonoBehaviour
         bool hitWall = false;
         
         // 左右边界
-        if (position.x < 0.02f)
+        if (position.x < 0f)
         {
-            position.x = 0.02f;
+            position.x = 0f;
             velocity.x = Mathf.Abs(velocity.x) * wallBounce;
             hitWall = true;
         }
-        else if (position.x > 0.98f)
+        else if (position.x > 1f)
         {
-            position.x = 0.98f;
+            position.x = 1f;
             velocity.x = -Mathf.Abs(velocity.x) * wallBounce;
             hitWall = true;
         }
@@ -215,9 +215,6 @@ public class RunawayMinecartEffect : MonoBehaviour
     void ResetToCenter()
     {
         position = new Vector2(0.5f, 0.5f);
-        velocity = initialDirection.normalized * initialSpeed;
-        currentMomentum = initialSpeed;
-        currentDirection = initialDirection.normalized;
         isRunaway = false;
     }
 }

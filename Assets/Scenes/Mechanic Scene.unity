@@ -399,7 +399,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -428,11 +428,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 631c40b46388da8408a84b619d105fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  momentumGain: 0.1
+  momentumDecay: 0.002
+  maxMomentum: 2.5
+  runawaySpeedThreshold: 1.2
+  runawayAcceleration: 0.15
+  runawayTurnResistance: 0.95
+  wallBounce: 0.85
+  speedDamping: 0.998
   maskMaterial: {fileID: 2100000, guid: 29ce066a6cfc6214caf0f466b384c166, type: 2}
-  acceleration: 1
-  inertia: 0.95
-  maxSpeed: 2
-  initialVelocity: {x: 500, y: 500}
+  revealRadius: 0.18
+  edgeSoftness: 0.05
 --- !u!1 &570996520
 GameObject:
   m_ObjectHideFlags: 0
