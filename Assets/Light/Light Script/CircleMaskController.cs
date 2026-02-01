@@ -1,212 +1,223 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
-public class CircleMaskController : MonoBehaviour
-public class SlipperyLightControl : MonoBehaviour
+public class RunawayMinecartEffect : MonoBehaviour
 {
-    [Header("遮罩设置")]
-    public Material maskMaterial;      // 光圈遮罩材质
-    public float moveSpeed = 0.5f;     // 光圈移动速度
-    [Header("基础设置")]
+    [Header("矿车失控设置")]
+    public float initialSpeed = 0.8f;       // 巨大的初速度
+    public Vector2 initialDirection = new Vector2(0.7f, 0.7f); // 初始方向
+    
+    [Header("动量系统")]
+    public float momentumGain = 0.1f;       // 按键时动量增加
+    public float momentumDecay = 0.002f;    // 动量衰减（非常慢）
+    public float maxMomentum = 2.5f;        // 最大动量
+    
+    [Header("失控加速")]
+    public float runawaySpeedThreshold = 1.2f; // 失控速度阈值
+    public float runawayAcceleration = 0.15f;  // 失控时自动加速
+    public float runawayTurnResistance = 0.95f; // 失控时转向阻力
+    
+    [Header("物理效果")]
+    public float wallBounce = 0.85f;        // 墙壁反弹系数
+    public float speedDamping = 0.998f;     // 速度衰减（接近1=几乎不减速）
+    
+    [Header("遮罩参数")]
     public Material maskMaterial;
-    public float baseSpeed = 20f;
+    public float revealRadius = 0.18f;
+    public float edgeSoftness = 0.05f;
     
-    [Header("光圈参数")]
-    [Range(0.05f, 0.5f)]
-    public float radius = 0.2f;        // 光圈半径
-    [Header("滑冰式惯性")]
-    public float acceleration = 3.0f;      // 加速度
-    public float deceleration = 0.2f;      // 减速度（越小越滑）
-    public float turnResponsiveness = 0.2f; // 转向灵敏度（越小越难转向）
-    public float maxSlideSpeed = 0.15f;    // 最大滑行速度
-    
-    [Header("随机干扰")]
-    public bool enableRandomForces = true;
-    public float randomForceInterval = 0.5f;  // 随机力间隔
-    public float randomForceStrength = 0.01f; // 随机力强度
-    
-    [Range(0f, 0.3f)]
-    public float softness = 0.1f;      // 边缘羽化
-    [Header("光圈参数")]
-    public float lightRadius = 0.15f;
-    //public float edgeSoftness = 0.08f;
-    
-    private Vector2 center = new Vector2(0.5f, 0.5f);  // 光圈中心位置
     private Vector2 position = new Vector2(0.5f, 0.5f);
-    private Vector2 velocity = Vector2.zero;
-    private Vector2 targetDirection = Vector2.zero;
-    private float lastRandomForceTime = 0f;
+    private Vector2 velocity;
+    private Vector2 currentDirection;
+    private float currentMomentum = 1.0f;
+    private bool isRunaway = false;
+    private float normalTurnResistance = 0.85f;
     
     void Start()
     {
-        // 如果没有指定材质，尝试从Image组件获取
+        // 初始化材质
         if (maskMaterial == null)
         {
             Image image = GetComponent<Image>();
-
-@@ -28,76 +38,123 @@ public class CircleMaskController : MonoBehaviour
+            if (image != null && image.material != null)
+            {
+                maskMaterial = image.material;
             }
         }
         
-        // 初始化材质参数
-        UpdateMaterialProperties();
-        UpdateLight();
+        // 设置巨大初速度
+        currentDirection = initialDirection.normalized;
+        velocity = currentDirection * initialSpeed;
+        currentMomentum = initialSpeed;
+        
+        // 初始化位置为随机点
+        position = new Vector2(0.3f, 0.3f);
+        
+        UpdateMask();
+        
+        // 启动失控监测
+        StartCoroutine(CheckRunawayState());
     }
     
     void Update()
     {
-        HandleKeyboardInput();
-        HandleSlipperyInput();
-        ApplySlidingPhysics();
-        
-        if (enableRandomForces)
-        {
-            ApplyRandomForces();
-        }
-        
-        UpdateLight();
-        
-        // 调试显示
-        Debug.Log($"速度: {velocity.magnitude:F3}, 方向: {targetDirection}");
+        HandleMinecartControls();
+        ApplyRunawayPhysics();
+        UpdatePosition();
+        UpdateMask();
     }
     
-    void HandleKeyboardInput()
-    void HandleSlipperyInput()
+    void HandleMinecartControls()
     {
-        // 获取键盘输入（方向键）
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
         // 获取输入方向
         Vector2 input = new Vector2(
-            Input.GetAxis("Horizontal"),
-            Input.GetAxis("Vertical")
+            Input.GetAxisRaw("Horizontal"),
+            Input.GetAxisRaw("Vertical")
         );
         
-        // 如果有输入，移动光圈
-        if (moveX != 0 || moveY != 0)
-        // 输入平滑处理
         if (input.magnitude > 0.1f)
         {
-            // 计算移动距离（基于时间，保持平滑）
-            float deltaX = moveX * moveSpeed * Time.deltaTime;
-            float deltaY = moveY * moveSpeed * Time.deltaTime;
-            // 缓慢地改变目标方向（模拟转向延迟）
-            targetDirection = Vector2.Lerp(
-                targetDirection, 
-                input.normalized, 
-                turnResponsiveness * Time.deltaTime * 10f
-            );
+            // 矿车控制：非常难改变方向
+            Vector2 targetDirection = input.normalized;
             
-            // 更新中心位置
-            center.x = Mathf.Clamp01(center.x + deltaX);
-            center.y = Mathf.Clamp01(center.y + deltaY);
-            // 加速（但加速缓慢）
-            float currentSpeed = velocity.magnitude;
-            float targetSpeed = Mathf.Min(baseSpeed * input.magnitude, maxSlideSpeed);
+            // 根据当前速度计算转向难度
+            float currentTurnResistance = isRunaway ? runawayTurnResistance : normalTurnResistance;
+            float speedFactor = Mathf.Clamp01(velocity.magnitude / runawaySpeedThreshold);
+            float effectiveTurnResistance = Mathf.Lerp(0.7f, currentTurnResistance, speedFactor);
             
-            // 更新材质
-            UpdateMaterialProperties();
-            if (currentSpeed < targetSpeed)
-            {
-                velocity += targetDirection * acceleration * Time.deltaTime;
-            }
+            // 缓慢改变方向
+            currentDirection = Vector2.Lerp(currentDirection, targetDirection, 
+                (1f - effectiveTurnResistance) * Time.deltaTime * 3f);
+            
+            // 积累动量（按键越久跑越快）
+            currentMomentum = Mathf.Min(currentMomentum + momentumGain * Time.deltaTime, maxMomentum);
         }
         else
         {
-            // 没有输入时，非常缓慢地减速（模拟冰面）
-            if (velocity.magnitude > 0.01f)
-            {
-                velocity = Vector2.Lerp(velocity, Vector2.zero, deceleration * Time.deltaTime);
-            }
-            else
-            {
-                velocity = Vector2.zero;
-            }
+            // 松开按键：动量衰减极慢，保持滑行
+            currentMomentum = Mathf.Max(currentMomentum - momentumDecay * Time.deltaTime, 0.1f);
         }
+        
+        // 更新速度（方向 × 动量）
+        velocity = currentDirection * currentMomentum;
     }
     
-    // 更新材质参数
-    void UpdateMaterialProperties()
-    void ApplySlidingPhysics()
+    void ApplyRunawayPhysics()
     {
-        if (maskMaterial != null)
+        // 检测是否进入失控状态
+        if (!isRunaway && velocity.magnitude > runawaySpeedThreshold)
+        {
+            isRunaway = true;
+        }
+        
+        // 失控状态：自动加速，更难控制
+        if (isRunaway)
+        {
+            // 持续加速
+            velocity += velocity.normalized * runawayAcceleration * Time.deltaTime;
+            
+            // 速度衰减更慢
+            velocity *= 0.999f;
+        }
+        else
+        {
+            // 正常状态的速度衰减
+            velocity *= speedDamping;
+        }
+        
+        
+    }
+    
+    void UpdatePosition()
+    {
         // 应用速度
-        position.x = Mathf.Clamp01(position.x + velocity.x * Time.deltaTime);
-        position.y = Mathf.Clamp01(position.y + velocity.y * Time.deltaTime);
+        position.x += velocity.x * Time.deltaTime;
+        position.y += velocity.y * Time.deltaTime;
         
-        // 边界处理：碰壁后失去大部分速度
-        if (position.x <= 0.01f || position.x >= 0.99f)
+        // 边界碰撞检测
+        bool hitWall = false;
+        
+        // 左右边界
+        if (position.x < 0.02f)
         {
-            velocity.x *= -0.3f; // 反弹但损失能量
-            position.x = Mathf.Clamp(position.x, 0.01f, 0.99f);
+            position.x = 0.02f;
+            velocity.x = Mathf.Abs(velocity.x) * wallBounce;
+            hitWall = true;
         }
-        if (position.y <= 0.01f || position.y >= 0.99f)
+        else if (position.x > 0.98f)
         {
-            maskMaterial.SetVector("_Center", new Vector4(center.x, center.y, 0, 0));
-            maskMaterial.SetFloat("_Radius", radius);
-            maskMaterial.SetFloat("_Softness", softness);
-            velocity.y *= -0.3f;
-            position.y = Mathf.Clamp(position.y, 0.01f, 0.99f);
+            position.x = 0.98f;
+            velocity.x = -Mathf.Abs(velocity.x) * wallBounce;
+            hitWall = true;
         }
         
-        // 模拟空气阻力（很小，让惯性持续）
-        velocity *= 0.995f;
+        // 上下边界
+        if (position.y < 0.02f)
+        {
+            position.y = 0.02f;
+            velocity.y = Mathf.Abs(velocity.y) * wallBounce;
+            hitWall = true;
+        }
+        else if (position.y > 0.98f)
+        {
+            position.y = 0.98f;
+            velocity.y = -Mathf.Abs(velocity.y) * wallBounce;
+            hitWall = true;
+        }
+        
+        // 撞墙后可能退出失控状态
+        if (hitWall && isRunaway && velocity.magnitude < runawaySpeedThreshold * 0.7f)
+        {
+            isRunaway = false;
+        }
     }
     
-    // 设置光圈中心位置（归一化坐标，0-1）
-    public void SetCenter(float x, float y)
-    void ApplyRandomForces()
+    IEnumerator CheckRunawayState()
     {
-        center.x = Mathf.Clamp01(x);
-        center.y = Mathf.Clamp01(y);
-        UpdateMaterialProperties();
-        if (Time.time - lastRandomForceTime > randomForceInterval)
+        while (true)
         {
-            // 添加随机方向的力
-            Vector2 randomForce = Random.insideUnitCircle * randomForceStrength;
-            velocity += randomForce;
+            yield return new WaitForSeconds(0.3f);
             
-            lastRandomForceTime = Time.time;
-            
-            Debug.Log($"随机力: {randomForce}");
+            // 如果速度降到阈值以下，退出失控状态
+            if (isRunaway && velocity.magnitude < runawaySpeedThreshold * 0.6f)
+            {
+                isRunaway = false;
+            }
         }
     }
     
-    // 设置光圈半径
-    public void SetRadius(float newRadius)
-    void UpdateLight()
+    void UpdateMask()
     {
-        radius = Mathf.Clamp(newRadius, 0.05f, 0.5f);
-        UpdateMaterialProperties();
         if (maskMaterial != null)
         {
             maskMaterial.SetVector("_Center", new Vector4(position.x, position.y, 0, 0));
-            maskMaterial.SetFloat("_Radius", lightRadius);
-            //maskMaterial.SetFloat("_Softness", edgeSoftness);
+            maskMaterial.SetFloat("_Radius", revealRadius);
+            maskMaterial.SetFloat("_Softness", edgeSoftness);
         }
     }
     
-    // 设置边缘羽化
-    public void SetSoftness(float newSoftness)
-    // 外部调用：增加干扰
-    public void AddDisturbance(Vector2 force)
+    // 外力干扰（可用于游戏事件）
+    public void ApplyExternalForce(Vector2 force)
     {
-        softness = Mathf.Clamp(newSoftness, 0f, 0.3f);
-        UpdateMaterialProperties();
         velocity += force;
+        currentMomentum = velocity.magnitude;
+        
+        // 外力可能引发失控
+        if (velocity.magnitude > runawaySpeedThreshold)
+        {
+            isRunaway = true;
+        }
     }
     
-    // 在编辑器中显示调试信息
-    void OnDrawGizmosSelected()
-    // 重置位置和速度
-    public void ResetToCenter()
+    
+    
+    void ResetToCenter()
     {
-        if (maskMaterial != null)
-        {
-            UpdateMaterialProperties();
-        }
         position = new Vector2(0.5f, 0.5f);
-        velocity = Vector2.zero;
-        targetDirection = Vector2.zero;
+        velocity = initialDirection.normalized * initialSpeed;
+        currentMomentum = initialSpeed;
+        currentDirection = initialDirection.normalized;
+        isRunaway = false;
     }
 }
