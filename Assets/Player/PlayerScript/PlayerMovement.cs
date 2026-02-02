@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("移动设置")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 2.5f;
 
     private Rigidbody2D rb;
     private Vector2 movement;
@@ -41,8 +41,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 2. 物理移动
-        // 使用 MovePosition 或 velocity 都可以，这里推荐 velocity 更加丝滑
         rb.velocity = movement * moveSpeed;
     }
 }
