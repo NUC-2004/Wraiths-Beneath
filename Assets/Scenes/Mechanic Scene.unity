@@ -166,7 +166,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.033333335
+  m_VoxelSize: 0.1
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: cf50d3e96b1ca8f489be5e78df855a00, type: 2}
   m_BuildHeightMesh: 0
@@ -717,7 +717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &382069028
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1047,7 +1047,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20.48, y: -199.02}
+  m_AnchoredPosition: {x: -10.15, y: -214.87}
   m_SizeDelta: {x: 684, y: 438}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &570996524
@@ -1092,7 +1092,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 0.98732233, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.27687788, g: 0.9622642, b: 0.60485244, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
