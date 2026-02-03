@@ -32,6 +32,7 @@ public class RunawayMinecartEffect : MonoBehaviour
     private float currentMomentum = 1.0f;
     private bool isRunaway = false;
     private float normalTurnResistance = 0.85f;
+    private bool isResetting = false;
     
     void Start()
     {
@@ -57,6 +58,8 @@ public class RunawayMinecartEffect : MonoBehaviour
     
     void Update()
     {
+        if (isResetting) return;
+        
         HandleMinecartControls();
         ApplyRunawayPhysics();
         UpdatePosition();
@@ -209,8 +212,78 @@ public class RunawayMinecartEffect : MonoBehaviour
             isRunaway = true;
         }
     }
+    public void ResetToPlayer(Vector3 playerWorldPos)
+    {
+        if (isResetting) return;
+        isResetting = true;
     
+        // 将玩家的世界坐标转换为 Shader 使用的 0-1 范围坐标
+        // 注意：这里假设你的遮罩坐标是 0-1 映射屏幕，如果是世界坐标请根据实际情况调整
+        Vector2 targetPos = Camera.main.WorldToViewportPoint(playerWorldPos);
     
+        StartCoroutine(MoveToPlayerRoutine(targetPos));
+    }
+
+    IEnumerator MoveToPlayerRoutine(Vector2 targetPos)
+    {
+        float elapsed = 0;
+        float duration = 0.1f; // 回到玩家身上所需的时间
+        Vector2 startPos = position;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            position = Vector2.Lerp(startPos, targetPos, elapsed / duration);
+            UpdateMask();
+            yield return null;
+        }
+    
+        position = targetPos;
+        UpdateMask();
+    }
+    public void StartGameOverSequence(Vector3 playerWorldPos)
+    {
+        if (isResetting) return;
+        isResetting = true;
+    
+        // 将玩家的世界坐标转换为 Shader 坐标 (0-1)
+        Vector2 targetPos = Camera.main.WorldToViewportPoint(playerWorldPos);
+    
+        StartCoroutine(GameOverRoutine(targetPos));
+    }
+
+    IEnumerator GameOverRoutine(Vector2 targetPos)
+    {
+        // 第一阶段：平滑移动到玩家位置
+        float moveElapsed = 0;
+        float moveDuration = 0.5f; // 吸附耗时
+        Vector2 startPos = position;
+
+        while (moveElapsed < moveDuration)
+        {
+            moveElapsed += Time.deltaTime;
+            position = Vector2.Lerp(startPos, targetPos, moveElapsed / moveDuration);
+            UpdateMask();
+            yield return null;
+        }
+    
+        // 确保位置精准对齐
+        position = targetPos;
+
+        // 第二阶段：取消遮挡（半径扩大）
+        float expandElapsed = 0;
+        float expandDuration = 1.0f; // 变亮耗时
+        float startRadius = revealRadius;
+        float targetRadius = 2.0f; // 足够大的半径，取消遮挡
+
+        while (expandElapsed < expandDuration)
+        {
+            expandElapsed += Time.deltaTime;
+            revealRadius = Mathf.Lerp(startRadius, targetRadius, expandElapsed / expandDuration);
+            UpdateMask();
+            yield return null;
+        }
+    }
     
     void ResetToCenter()
     {
