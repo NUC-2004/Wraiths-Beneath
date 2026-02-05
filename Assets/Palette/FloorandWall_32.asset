@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: MetalFloor_0
+  m_Name: FloorandWall_32
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -1419651167, guid: 27a5eea4c79714542912d5a0fb850477, type: 3}
+  m_Sprite: {fileID: 1260368557, guid: 31ba8838af841d34c84b87829d0eebcb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
