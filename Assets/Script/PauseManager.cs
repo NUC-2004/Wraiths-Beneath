@@ -5,45 +5,45 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-    public GameObject pauseMenuUI; // 拖入你的 PauseMenu 对象
+    public GameObject pauseMenu;
     private bool isPaused = false;
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
-                Resume();
-            else
-                Pause();
+            if (isPaused) ResumeGame();
+            else PauseGame();
         }
     }
 
-    public void Resume()
+    // 1. 继续游戏
+    public void ResumeGame()
     {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f; // 恢复游戏时间
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f; // 恢复时间
         isPaused = false;
     }
 
-    void Pause()
+    void PauseGame()
     {
-        pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f; // 冻结游戏时间
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f; // 停止时间
         isPaused = true;
     }
 
-    public void Restart()
-    {
-        Time.timeScale = 1f;
-        // 重新加载当前场景
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
+    // 2. 返回主菜单
     public void GoToMainMenu()
     {
-        Time.timeScale = 1f;
-        // 替换为你的主菜单场景名称
-        SceneManager.LoadScene("MenuSecne"); 
+        Time.timeScale = 1f; // 重要：切场景前必须恢复时间，否则新场景也是静止的
+        SceneManager.LoadScene("MenuSecne"); // 确保名字和你 Hierarchy 里的场景名一致
+    }
+
+    // 3. 重新开始
+    public void RestartGame()
+    {
+        Time.timeScale = 1f; // 恢复时间
+        // 加载当前活跃的场景
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
