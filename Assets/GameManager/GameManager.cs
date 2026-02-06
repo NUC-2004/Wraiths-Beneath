@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+
 public class GameManager : MonoBehaviour
 {
     public GameObject gameOverUI; 
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     void Awake() { Instance = this; }
 
+    
     public void PlayerLost()
     {
         if (isGameOver) return;
@@ -27,16 +29,25 @@ public class GameManager : MonoBehaviour
             if(pc != null) pc.enabled = false;
         }
 
-        // 2. 触发光圈吸附（光圈会在吸附完后自动 SetActive(false)）
+        // 2. 触发光圈吸附
         if (maskEffect != null && player != null)
         {
             maskEffect.StartGameOverSequence(player.transform.position);
         }
 
-        // 3. 弹出 UI
-        StartCoroutine(ShowGameOverAnimation());
+        // 3. 开启协程，等待 1.5 秒后显示 UI
+        StartCoroutine(ShowUIDelayed(1.5f));
     }
+    IEnumerator ShowUIDelayed(float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
 
+        // 时间到了，弹出 UI
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+        }
+    }
     public void PlayerWin()
     {
         if (isGameOver) return;
