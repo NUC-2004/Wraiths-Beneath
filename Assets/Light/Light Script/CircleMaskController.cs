@@ -139,18 +139,18 @@ public class RunawayMinecartEffect : MonoBehaviour
         position.y += velocity.y * Time.deltaTime;
         
         // 边界碰撞检测
-        bool hitWall = false;
+        bool hitWall = true;
         
         // 左右边界
-        if (position.x < 0f)
+        if (position.x < 0.02f)
         {
-            position.x = 0f;
+            position.x = 0.02f;
             velocity.x = Mathf.Abs(velocity.x) * wallBounce;
             hitWall = true;
         }
-        else if (position.x > 1f)
+        else if (position.x > 0.98f)
         {
-            position.x = 1f;
+            position.x = 0.98f;
             velocity.x = -Mathf.Abs(velocity.x) * wallBounce;
             hitWall = true;
         }
