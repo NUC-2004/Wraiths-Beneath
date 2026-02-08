@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BoxCollider2D))] // 或者 CircleCollider2D
+[RequireComponent(typeof(CircleCollider2D))] 
 public class PlayerController : MonoBehaviour
 {
     [Header("移动设置")]

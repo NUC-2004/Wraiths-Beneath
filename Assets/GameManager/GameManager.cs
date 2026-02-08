@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject gameOverUI; 
+    public GameObject gameOverUI;
+    public GameObject gameWinUI;
     public float scaleSpeed = 2f;
     private bool isGameOver = false;
 
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
         isGameOver = true;
-        Invoke("RestartGame", 0.1f); 
+        gameWinUI.SetActive(true);
     }
 
     IEnumerator ShowGameOverAnimation()
