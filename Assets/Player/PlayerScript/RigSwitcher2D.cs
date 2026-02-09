@@ -6,6 +6,7 @@ public class RigSwitcher2D : MonoBehaviour
     public GameObject rigRight;
     public GameObject rigUp;
     public GameObject rigDown;
+    public GameObject rigDead;
 
     Animator animLeft;
     Animator animRight;
@@ -43,6 +44,17 @@ public class RigSwitcher2D : MonoBehaviour
     {
         Animator a = GetCurrentAnimator();
         if (a != null) a.enabled = moving;
+    }
+    public void SetDead()
+    {
+        // 关闭所有移动方向的 Rig
+        if (rigLeft) rigLeft.SetActive(false);
+        if (rigRight) rigRight.SetActive(false);
+        if (rigUp) rigUp.SetActive(false);
+        if (rigDown) rigDown.SetActive(false);
+
+        // 激活死亡 Rig
+        if (rigDead) rigDead.SetActive(true);
     }
 
     Animator GetCurrentAnimator()
