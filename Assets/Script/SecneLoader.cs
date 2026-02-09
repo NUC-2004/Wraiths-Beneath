@@ -21,7 +21,7 @@ public class SceneLoader : MonoBehaviour
     // 方法2：为不同按钮分别创建方法
     public void LoadGameScene()
     {
-        LoadSceneByName("MapScene");
+        LoadSceneByName("Mechanic Scene");
     }
     
     public void LoadOptionScene()
