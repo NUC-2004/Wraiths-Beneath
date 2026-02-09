@@ -8,6 +8,7 @@ TagManager:
   - Door
   - Floor
   - Halfwall
+  - Destination
   layers:
   - Default
   - TransparentFX
