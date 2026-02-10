@@ -3,34 +3,35 @@ using UnityEngine;
 public class MonsterProximity : MonoBehaviour
 {
     private Transform player;
+    private bool canPlay = true; // --- 新增控制开关 ---
     
     [Header("距离设置")]
-    public float detectRange = 10f;    // 开始听到声音的距离
-    public float attackRange = 2f;     // 离得太近的危险距离
+    public float detectRange = 10f;
+    public float attackRange = 2f;
 
     [Header("音效组件")]
-    public AudioSource proximitySource; // 拖入那个 3D 音效的 AudioSource
+    public AudioSource proximitySource;
 
     void Start()
     {
-        // 自动寻找玩家
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
     }
 
     void Update()
     {
-        if (player == null) return;
+        // --- 核心逻辑：如果被禁用或者玩家死了，就停掉声音并不再运行 ---
+        if (!canPlay || player == null) 
+        {
+            if (proximitySource.isPlaying) proximitySource.Stop();
+            return;
+        }
 
-        // 1. 计算距离
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // 2. 根据距离控制音效 (如果你不想用 Unity 自带的 3D 衰减，可以用代码控)
         if (distance < detectRange)
         {
             if (!proximitySource.isPlaying) proximitySource.Play();
-            
-            // 越近越大声：音量从 0 到 1 变化
             float vol = 1 - (distance / detectRange);
             proximitySource.volume = Mathf.Clamp01(vol);
         }
@@ -38,11 +39,12 @@ public class MonsterProximity : MonoBehaviour
         {
             if (proximitySource.isPlaying) proximitySource.Stop();
         }
+    }
 
-        // 3. (可选) 如果离得太近了，可以触发特定逻辑
-        if (distance < attackRange)
-        {
-            // Debug.Log("怪物发现你了！");
-        }
+    // --- 新增：供 GameManager 远程关闭的方法 ---
+    public void StopProximitySound()
+    {
+        canPlay = false;
+        if (proximitySource != null) proximitySource.Stop();
     }
 }

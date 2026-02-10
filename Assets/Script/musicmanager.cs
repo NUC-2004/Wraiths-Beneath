@@ -1,17 +1,19 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic; // 引用列表所需的命名空間
 
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance;
 
     public AudioSource musicSource;
-    // 💡 确保这里和你的场景文件名完全一致（包含空格）
-    public string gameSceneName = "Mechanic Scene"; 
+
+    [Header("遊戲場景名單 (在這些場景中不播音樂)")]
+    public List<string> gameScenes = new List<string> { "Mechanic Scene" };
 
     void Awake()
     {
-        // --- 彻底解决重叠问题的单例逻辑 ---
+        // 確保單例，防止切換場景時產生多個音樂實體
         if (Instance == null)
         {
             Instance = this;
@@ -19,7 +21,6 @@ public class MusicManager : MonoBehaviour
         }
         else
         {
-            // 如果回到菜单发现已经有一个在播了，就毁掉新的，留下旧的
             Destroy(gameObject);
             return;
         }
@@ -37,24 +38,34 @@ public class MusicManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 打印一下，看看 Unity 实际读取到的名字里有没有多余空格
-        Debug.Log("MusicManager 正在检查场景: [" + scene.name + "]");
-
-        // 使用 Trim() 去掉可能存在的首尾空格，防止手动输入错误
-        if (scene.name.Trim() == gameSceneName.Trim())
+        // 檢查當前載入的場景是否在黑名單中
+        bool isGameScene = false;
+        foreach (string gScene in gameScenes)
         {
+            // 使用 Trim 確保不會因為手抖多打了空格而匹配失敗
+            if (scene.name.Trim() == gScene.Trim())
+            {
+                isGameScene = true;
+                break;
+            }
+        }
+
+        if (isGameScene)
+        {
+            // 如果進入了遊戲場景，停止音樂
             if (musicSource != null && musicSource.isPlaying)
             {
-                musicSource.Pause(); // 暂停游戏背景音乐
-                Debug.Log("进入游戏场景，背景音乐已暂停");
+                musicSource.Stop(); 
+                Debug.Log("检测到游戏场景 [" + scene.name + "]，背景音乐停止");
             }
         }
         else
         {
+            // 如果回到了 Menu, Option 等場景，播放音樂
             if (musicSource != null && !musicSource.isPlaying)
             {
-                musicSource.Play(); // 回到菜单，继续播放
-                Debug.Log("离开游戏场景，背景音乐恢复");
+                musicSource.Play();
+                Debug.Log("回到非游戏场景 [" + scene.name + "]，背景音乐开启");
             }
         }
     }
