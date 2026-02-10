@@ -67,4 +67,11 @@ public class PauseManager : MonoBehaviour
         // 重新加载当前正在运行的场景
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    
 }
+
+
+
+
+
+
