@@ -69,7 +69,7 @@ public class GameFlowController : MonoBehaviour
    public void JumpToMechanicScene()
     {
         Time.timeScale = 1f; 
-        SceneManager.LoadScene("Mechanic Scene"); 
+        SceneManager.LoadScene("3"); 
     }
 
     // --- 新添加的功能 ---
@@ -78,6 +78,6 @@ public class GameFlowController : MonoBehaviour
     {
         Time.timeScale = 1f; // 极其重要：跳转前必须恢复时间
         // 确保引号内的文字与你的场景文件名一模一样（包括空格）
-        SceneManager.LoadScene("Mechanic3 Scene 2"); 
+        SceneManager.LoadScene("2"); 
     }
 }

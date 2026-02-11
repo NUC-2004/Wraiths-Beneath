@@ -1031,7 +1031,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 1404537851}
-  gameSceneName: Mechanic Scene
+  gameScenes:
+  - 1
+  - 2
+  - 3
 --- !u!1 &1430016909
 GameObject:
   m_ObjectHideFlags: 0
