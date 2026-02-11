@@ -42,10 +42,7 @@ public class GameManager : MonoBehaviour
             var switcher = player.GetComponent<RigSwitcher2D>();
             if (switcher != null) switcher.SetDead();
 
-            if (audioSource != null && deathSound != null)
-            {
-                audioSource.PlayOneShot(deathSound);
-            }
+            // --- 原本在这里播放的 deathSound 移走了，为了和图片同步 ---
         }
 
         if (maskEffect != null && player != null)
@@ -53,16 +50,28 @@ public class GameManager : MonoBehaviour
             maskEffect.StartGameOverSequence(player.transform.position);
         }
     
-        // 步骤 A：先等待 1.5 秒
-        StartCoroutine(ShowUIDelayed(1.5f)); 
+        // 延迟显示图片和播放音效
+        StartCoroutine(ShowUIDelayed(1f)); 
     }
 
     IEnumerator ShowUIDelayed(float delayTime)
     {
-        // 1. 等待第一段延迟 (1.5s)
+        // 1. 等待第一段延迟
         yield return new WaitForSeconds(delayTime);
 
-        // --- 此时：清理现场声音并显示图片 ---
+        // --- 此时：图片展示，声音同步响起 ---
+        if (Image != null) 
+        {
+            Image.SetActive(true);
+            
+            // 在图片显示的瞬间，播放死亡音效
+            if (audioSource != null && deathSound != null)
+            {
+                audioSource.PlayOneShot(deathSound);
+            }
+        }
+
+        // 清理现场其他背景音乐
         if (MusicManager.Instance != null && MusicManager.Instance.musicSource != null)
             MusicManager.Instance.musicSource.Stop();
 
@@ -73,17 +82,15 @@ public class GameManager : MonoBehaviour
         foreach (AudioSource source in allSources)
             if (source != audioSource) source.Stop();
 
-        if (Image != null) Image.SetActive(true);
-
-        // 2. 步骤 B：图片显示 1 秒
+        // 2. 图片显示 1 秒
         yield return new WaitForSeconds(1f);
 
         // 3. --- 此时：图片消失，弹出正式 UI ---
-        if (Image != null) Image.SetActive(false); // 图片消失
+        if (Image != null) Image.SetActive(false); 
 
         if (gameOverUI != null) gameOverUI.SetActive(true);
 
-        // 播放失败背景音乐
+        // 播放失败后的背景循环音乐
         if (gameOverMusic != null && audioSource != null)
         {
             audioSource.clip = gameOverMusic;
@@ -92,20 +99,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- 胜利逻辑 (保持原样) ---
     public void PlayerWin()
     {
         if (isGameOver) return;
         isGameOver = true;
+
+        // 胜利音量调小到 0.2
+        if (audioSource != null && winSound != null) 
+        {
+            audioSource.PlayOneShot(winSound, 0.2f); 
+        }
+
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dest = GameObject.FindGameObjectWithTag("Destination");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
+
         if (player != null && dest != null && maskEffect != null)
         {
             var pc = player.GetComponent<PlayerMoveAndFacing2D>();
             if (pc != null) pc.enabled = false;
             maskEffect.StartGameOverSequence(dest.transform.position);
-            if (audioSource != null && winSound != null) audioSource.PlayOneShot(winSound);
             StartCoroutine(WinSequence(player));
         }
     }

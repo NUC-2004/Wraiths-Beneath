@@ -15,9 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/OptionScene.unity
     guid: 94e66cc8c1fc60246ab2343e88617482
   - enabled: 1
-    path: Assets/Scenes/Mechanic Scene.unity
-    guid: 93ae3ddee09de7e4c8192f3c01d6edb2
-  - enabled: 1
     path: Assets/Scenes/MapTestScene.unity
     guid: 7cd06ca6d4f65644fad785c7e507348a
   - enabled: 1
@@ -30,9 +27,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Level3.unity
     guid: 969d586066c74354d9cc0aacb6f90531
   - enabled: 1
-    path: Assets/Scenes/Mechanic2 Scene 1.unity
+    path: Assets/Scenes/1.unity
     guid: 0af3baf8edc81ee43b27bc33564c92c1
   - enabled: 1
-    path: Assets/Scenes/Mechanic3 Scene 2.unity
+    path: Assets/Scenes/2.unity
     guid: f3757991b8626814a82d2574ab0d44ae
+  - enabled: 1
+    path: Assets/Scenes/3.unity
+    guid: 93ae3ddee09de7e4c8192f3c01d6edb2
   m_configObjects: {}
