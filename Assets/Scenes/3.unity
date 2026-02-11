@@ -3598,8 +3598,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.75, y: 11.45}
-  m_SizeDelta: {x: 80.64, y: 360.23}
+  m_AnchoredPosition: {x: 0, y: 6.6950073}
+  m_SizeDelta: {x: 38.57, y: 13.39}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!328 &1076623409
 VideoPlayer:
@@ -3684,6 +3684,7 @@ GameObject:
   - component: {fileID: 1157100458}
   - component: {fileID: 1157100457}
   - component: {fileID: 1157100459}
+  - component: {fileID: 1157100460}
   m_Layer: 5
   m_Name: GameWinUI
   m_TagString: Untagged
@@ -3762,8 +3763,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 1076623409}
+  uiPanel: {fileID: 0}
+--- !u!114 &1157100460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157100455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7223ba7bf5c5b6647b182eb6921b1158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 1076623409}
   uiCanvasGroup: {fileID: 1042755349}
-  fadeInDuration: 1
+  fadeInDuration: 1.5
 --- !u!1 &1169207989
 GameObject:
   m_ObjectHideFlags: 0
@@ -4434,8 +4449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 714304210}
-  uiCanvasGroup: {fileID: 2055409867}
-  fadeInDuration: 1.5
+  uiPanel: {fileID: 0}
 --- !u!114 &1494430949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5541,11 +5555,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8986941041308696859, guid: e1afa929bb57f5b4da772fd741acae1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.6
+      value: 9.26
       objectReference: {fileID: 0}
     - target: {fileID: 8986941041308696859, guid: e1afa929bb57f5b4da772fd741acae1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.09
+      value: 4.95
       objectReference: {fileID: 0}
     - target: {fileID: 8986941041308696859, guid: e1afa929bb57f5b4da772fd741acae1f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5772,11 +5786,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1842611888210989857, guid: 80ccbd4441e66794eb2c5687ec9ca6fd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.21
+      value: 5.03
       objectReference: {fileID: 0}
     - target: {fileID: 1842611888210989857, guid: 80ccbd4441e66794eb2c5687ec9ca6fd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.41
+      value: 2.16
       objectReference: {fileID: 0}
     - target: {fileID: 1842611888210989857, guid: 80ccbd4441e66794eb2c5687ec9ca6fd, type: 3}
       propertyPath: m_LocalPosition.z
