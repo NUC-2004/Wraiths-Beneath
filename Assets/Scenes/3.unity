@@ -896,7 +896,7 @@ AudioSource:
   m_GameObject: {fileID: 292649553}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -1662,7 +1662,7 @@ AudioSource:
   m_GameObject: {fileID: 496325244}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: e90d8b05b40a27f4a88f366dcc3627bd, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -3422,7 +3422,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 738465611}
         m_TargetAssemblyTypeName: GameFlowController, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: BackToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3445,14 +3445,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.990566, g: 0.990566, b: 0.990566, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 63cb8311c3b53e940aad419e4ee1f5cc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9f52f171c285c564f802e6bf3ad37f3f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3598,8 +3598,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 7.549988, y: 7.550003}
-  m_SizeDelta: {x: 92.23, y: 38.57}
+  m_AnchoredPosition: {x: 1.75, y: 11.45}
+  m_SizeDelta: {x: 80.64, y: 360.23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!328 &1076623409
 VideoPlayer:
@@ -3609,7 +3609,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1076623407}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: f0b3db52cb8310d4681402c71628045f, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: b37cb29950c00d246b4e4961f07b56ce, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -3706,10 +3706,10 @@ RectTransform:
   - {fileID: 1076623408}
   m_Father: {fileID: 809052367}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0012512, y: 0.00073242}
-  m_SizeDelta: {x: 817.53, y: 461.19}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1157100457
 MonoBehaviour:
@@ -4428,9 +4428,24 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494430944}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb4b300f26506934db70c09e1a43493d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 714304210}
+  uiCanvasGroup: {fileID: 2055409867}
+  fadeInDuration: 1.5
+--- !u!114 &1494430949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494430944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7223ba7bf5c5b6647b182eb6921b1158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 714304210}
@@ -4755,7 +4770,7 @@ AudioSource:
   m_GameObject: {fileID: 1659886789}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: 0311a3b85e19fcb45a4acd5db8d92eb8, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -5314,7 +5329,7 @@ AudioSource:
   m_GameObject: {fileID: 2065434550}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: d60b643f1cfacff46b04e49645c2de61, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -10595,6 +10610,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 443152126708910984, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1494430948}
+    - targetCorrespondingSourceObject: {fileID: 443152126708910984, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1494430949}
   m_SourcePrefab: {fileID: 100100000, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
 --- !u!1001 &6391259088641271416
 PrefabInstance:
@@ -10651,7 +10669,7 @@ PrefabInstance:
     - target: {fileID: 4704515661922669798, guid: f3e9249fff392cb4ab299cbfd058a4f4, type: 3}
       propertyPath: winSound
       value: 
-      objectReference: {fileID: 8300000, guid: dce37de75d826024a87c80295acaadf7, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 4704515661922669798, guid: f3e9249fff392cb4ab299cbfd058a4f4, type: 3}
       propertyPath: gameWinUI
       value: 

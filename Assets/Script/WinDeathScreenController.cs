@@ -1,39 +1,28 @@
 using UnityEngine;
 using UnityEngine.Video;
-using UnityEngine.SceneManagement; // 必须引用场景管理命名空间
+using UnityEngine.SceneManagement; // 必须引用
 using System.Collections;
 
-public class DeathScreenController : MonoBehaviour
+public class WinDeathScreenController : MonoBehaviour
 {
     [Header("组件引用")]
-    public VideoPlayer videoPlayer;    
-    public CanvasGroup uiCanvasGroup; 
+    public VideoPlayer videoPlayer;    // 拖入 VideoBackground
+    public CanvasGroup uiCanvasGroup; // 拖入带有 Canvas Group 的 UI 父物体
 
     [Header("设置")]
-    public float fadeInDuration = 2.0f; 
+    public float fadeInDuration = 1.5f; // 淡入持续时间（秒）
 
     void OnEnable()
     {
-        // --- 新增：场景名称检测 ---
-        // 只有当前场景名为 "3" 时才执行逻辑
-        if (SceneManager.GetActiveScene().name != "3")
-        {
-            return; 
-        }
-
-        // --- 新增：全局静音逻辑 ---
-        // 暂停全局所有的 AudioSource（游戏背景音、怪物音效等）
-        AudioListener.pause = true; 
-
-        // 初始 UI 状态设置
+        // 初始状态：隐藏 UI，注册视频结束事件
         if (uiCanvasGroup != null)
         {
             uiCanvasGroup.alpha = 0f;
-            uiCanvasGroup.interactable = false;
-            uiCanvasGroup.blocksRaycasts = false;
+            uiCanvasGroup.interactable = false;     // 未淡入前不可交互
+            uiCanvasGroup.blocksRaycasts = false;   // 未淡入前不挡鼠标
         }
 
-        // 绑定视频结束事件
+        // 绑定视频结束的回调函数
         videoPlayer.loopPointReached += OnVideoFinished;
         
         // 开始播放视频
@@ -42,24 +31,29 @@ public class DeathScreenController : MonoBehaviour
 
     void OnVideoFinished(VideoPlayer vp)
     {
-        // 视频播放完，恢复全局声音（如果需要的话，不需要可注释掉此行）
-        AudioListener.pause = false; 
-
+        // 视频播完，启动淡入协程
         StartCoroutine(FadeInUI());
+        
+        // 取消事件绑定，防止重复触发
         videoPlayer.loopPointReached -= OnVideoFinished;
     }
 
     IEnumerator FadeInUI()
     {
         float currentTime = 0f;
+
         while (currentTime < fadeInDuration)
         {
             currentTime += Time.deltaTime;
+            // 平滑计算当前的 Alpha 值
             if (uiCanvasGroup != null)
+            {
                 uiCanvasGroup.alpha = Mathf.Lerp(0f, 1f, currentTime / fadeInDuration);
-            yield return null;
+            }
+            yield return null; // 等待下一帧
         }
 
+        // 确保最终状态完全显示，并开启交互
         if (uiCanvasGroup != null)
         {
             uiCanvasGroup.alpha = 1f;

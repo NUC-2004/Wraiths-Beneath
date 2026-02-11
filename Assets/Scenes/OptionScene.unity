@@ -156,8 +156,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 43.480564, y: -74.09308}
-  m_SizeDelta: {x: 989.5824, y: 503.8987}
+  m_AnchoredPosition: {x: 90, y: -94}
+  m_SizeDelta: {x: 1056.2118, y: 415.0595}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &181023225
 MonoBehaviour:
@@ -286,6 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 469626029}
   - component: {fileID: 469626030}
+  - component: {fileID: 469626031}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -359,13 +360,39 @@ MonoBehaviour:
   m_FillRect: {fileID: 856989075}
   m_HandleRect: {fileID: 2083109482}
   m_Direction: 0
-  m_MinValue: 0
+  m_MinValue: 0.0001
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 24100000, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
+        m_TargetAssemblyTypeName: VolumeController, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &469626031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 469626028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1ef5d1145b78794897ff98abcfd8874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myMixer: {fileID: 24100000, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
+  volumeSlider: {fileID: 469626030}
 --- !u!1 &634631967
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,7 +930,7 @@ AudioSource:
   m_GameObject: {fileID: 1404537850}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: f46db80e16fb8eb46b1cb7042c9880db, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1017,6 +1044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1ef5d1145b78794897ff98abcfd8874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myMixer: {fileID: 24100000, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   volumeSlider: {fileID: 469626030}
 --- !u!114 &1404537854
 MonoBehaviour:

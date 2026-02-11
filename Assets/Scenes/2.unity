@@ -722,7 +722,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4cd3f7bd7188648a0dac15dff4c51c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2
   footstepSource: {fileID: 292649562}
   footstepClips:
   - {fileID: 8300000, guid: 6d74e702029cd6a4bb8ef5b129543567, type: 3}
@@ -796,7 +796,7 @@ AudioSource:
   m_GameObject: {fileID: 292649553}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -1542,7 +1542,7 @@ AudioSource:
   m_GameObject: {fileID: 496325244}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: e90d8b05b40a27f4a88f366dcc3627bd, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -2868,7 +2868,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -1}
   m_AnchorMin: {x: 0.49080947, y: 0.526}
   m_AnchorMax: {x: 0.49080947, y: 0.526}
-  m_AnchoredPosition: {x: -2.02, y: -127.7}
+  m_AnchoredPosition: {x: 13, y: -138}
   m_SizeDelta: {x: 197.77, y: 26.41}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1042755345
@@ -3028,8 +3028,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -9.85, y: 2.25}
+  m_SizeDelta: {x: 92.94, y: 439.74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!328 &1076623409
 VideoPlayer:
@@ -3143,7 +3143,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0012512, y: 0.00073242}
+  m_AnchoredPosition: {x: 0.0006318, y: 0.0010599}
   m_SizeDelta: {x: 817.53, y: 461.19}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1157100457
@@ -3788,9 +3788,24 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494430944}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb4b300f26506934db70c09e1a43493d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 714304210}
+  uiCanvasGroup: {fileID: 2055409867}
+  fadeInDuration: 1.5
+--- !u!114 &1494430949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494430944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7223ba7bf5c5b6647b182eb6921b1158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 714304210}
@@ -4039,7 +4054,7 @@ AudioSource:
   m_GameObject: {fileID: 1659886789}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: 0311a3b85e19fcb45a4acd5db8d92eb8, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -4600,7 +4615,7 @@ AudioSource:
   m_GameObject: {fileID: 2065434550}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: a7ff3fd361b69d54592fac3e3c7fea67, type: 2}
   m_audioClip: {fileID: 8300000, guid: d60b643f1cfacff46b04e49645c2de61, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -5365,6 +5380,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 443152126708910984, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1494430948}
+    - targetCorrespondingSourceObject: {fileID: 443152126708910984, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1494430949}
   m_SourcePrefab: {fileID: 100100000, guid: 81e4025c43e7c60498181db3170f7816, type: 3}
 --- !u!1001 &6391259088641271416
 PrefabInstance:

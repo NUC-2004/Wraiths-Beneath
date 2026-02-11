@@ -48,7 +48,7 @@ public class RunawayMinecartEffect : MonoBehaviour
         
         
         // 初始化位置为随机点
-        position = new Vector2(0.3f, 0.3f);
+        position = new Vector2(0.5f, 0.7f);
         
         UpdateMask();
         
