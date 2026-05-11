@@ -78,17 +78,13 @@ public class MonsterAI : MonoBehaviour
             return;
         }
 
-        if (!agent.enabled)
+        if (!agent.enabled || !agent.isOnNavMesh)
         {
             return;
         }
 
-        if (agent.isOnNavMesh)
-        {
-            agent.ResetPath();
-            agent.velocity = Vector3.zero;
-        }
-
+        agent.ResetPath();
+        agent.velocity = Vector3.zero;
         agent.isStopped = true;
     }
 

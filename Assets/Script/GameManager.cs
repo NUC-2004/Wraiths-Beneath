@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
 
-        EndGameplay(player, true);
+        EndGameplay(player, true, false);
 
         if (maskEffect != null && player != null)
         {
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         GameObject dest = GameObject.FindGameObjectWithTag("Destination");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
 
-        EndGameplay(player, false);
+        EndGameplay(player, false, true);
         PlayWinSound();
 
         if (player == null || dest == null || maskEffect == null)
@@ -93,6 +93,8 @@ public class GameManager : MonoBehaviour
             Image.SetActive(true);
             PlayDeathSound();
         }
+
+        StopGameplayAudio();
 
         yield return new WaitForSeconds(1f);
 
@@ -178,11 +180,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void EndGameplay(GameObject player, bool showDeadRig)
+    private void EndGameplay(GameObject player, bool showDeadRig, bool stopAllGameplayAudio)
     {
         DisablePlayer(player, showDeadRig);
         StopMonsters();
-        StopGameplayAudio();
+        StopProximityAudio();
+
+        if (stopAllGameplayAudio)
+        {
+            StopGameplayAudio();
+        }
     }
 
     private void StopMonsters()
@@ -190,7 +197,14 @@ public class GameManager : MonoBehaviour
         MonsterAI[] monsters = FindObjectsOfType<MonsterAI>();
         foreach (MonsterAI monster in monsters)
         {
-            monster.StopChasing();
+            try
+            {
+                monster.StopChasing();
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogWarning($"Failed to stop monster '{monster.name}': {exception.Message}", monster);
+            }
         }
     }
 
@@ -229,11 +243,7 @@ public class GameManager : MonoBehaviour
             MusicManager.Instance.musicSource.Stop();
         }
 
-        MonsterProximity[] allGhosts = FindObjectsOfType<MonsterProximity>();
-        foreach (MonsterProximity ghost in allGhosts)
-        {
-            ghost.StopProximitySound();
-        }
+        StopProximityAudio();
 
         AudioSource[] allSources = FindObjectsOfType<AudioSource>();
         foreach (AudioSource source in allSources)
@@ -242,6 +252,15 @@ public class GameManager : MonoBehaviour
             {
                 source.Stop();
             }
+        }
+    }
+
+    private void StopProximityAudio()
+    {
+        MonsterProximity[] allGhosts = FindObjectsOfType<MonsterProximity>();
+        foreach (MonsterProximity ghost in allGhosts)
+        {
+            ghost.StopProximitySound();
         }
     }
 }
