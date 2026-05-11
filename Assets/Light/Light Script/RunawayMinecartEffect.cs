@@ -275,14 +275,24 @@ public class RunawayMinecartEffect : MonoBehaviour
             return false;
         }
 
-        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(player.position);
+        return IsWorldPositionInsideView(player.position);
+    }
+
+    public bool IsWorldPositionInsideView(Vector3 worldPosition)
+    {
+        if (Camera.main == null)
+        {
+            return false;
+        }
+
+        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(worldPosition);
         if (viewportPoint.z < 0f)
         {
             return false;
         }
 
-        Vector2 playerViewportPosition = new Vector2(viewportPoint.x, viewportPoint.y);
-        return Vector2.Distance(playerViewportPosition, position) <= revealRadius;
+        Vector2 viewportPosition = new Vector2(viewportPoint.x, viewportPoint.y);
+        return Vector2.Distance(viewportPosition, position) <= revealRadius;
     }
 
     private IEnumerator MoveToPlayerRoutine(Vector2 targetPos)
