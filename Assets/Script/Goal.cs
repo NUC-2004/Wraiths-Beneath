@@ -6,10 +6,8 @@ public class Goal : MonoBehaviour
     public float unlockDuration = 3f;
 
     [Header("Progress Display")]
-    public Vector2 progressOffset = new Vector2(0f, 1.1f);
+    public Vector2 progressOffset = new Vector2(0f, 0.45f);
     public Vector2 progressBarSize = new Vector2(1.2f, 0.08f);
-    public float timerYOffset = 0.18f;
-    public float timerCharacterSize = 0.12f;
     public int progressSortingOrder = 1000;
 
     private static Sprite progressSprite;
@@ -17,7 +15,6 @@ public class Goal : MonoBehaviour
     private RunawayMinecartEffect viewController;
     private GameObject progressRoot;
     private Transform progressFillTransform;
-    private TextMesh timerText;
     private float unlockProgress;
     private bool isUnlocked;
     private bool playerInside;
@@ -106,7 +103,7 @@ public class Goal : MonoBehaviour
 
     private void EnsureProgressUi()
     {
-        if (progressRoot != null && progressFillTransform != null && timerText != null)
+        if (progressRoot != null && progressFillTransform != null)
         {
             return;
         }
@@ -132,20 +129,6 @@ public class Goal : MonoBehaviour
         fillRenderer.color = new Color(0.22f, 0.95f, 0.78f, 0.95f);
         fillRenderer.sortingOrder = progressSortingOrder + 1;
 
-        GameObject text = new GameObject("Timer");
-        text.transform.SetParent(progressRoot.transform, false);
-        text.transform.localPosition = new Vector3(0f, timerYOffset, 0f);
-
-        timerText = text.AddComponent<TextMesh>();
-        timerText.anchor = TextAnchor.MiddleCenter;
-        timerText.alignment = TextAlignment.Center;
-        timerText.characterSize = timerCharacterSize;
-        timerText.fontSize = 32;
-        timerText.color = Color.white;
-
-        MeshRenderer textRenderer = text.GetComponent<MeshRenderer>();
-        textRenderer.sortingOrder = progressSortingOrder + 2;
-
         SetProgressVisible(false);
     }
 
@@ -158,7 +141,6 @@ public class Goal : MonoBehaviour
         progressRoot.transform.position = GetProgressWorldPosition();
         progressFillTransform.localScale = new Vector3(fillAmount, 1f, 1f);
         progressFillTransform.localPosition = new Vector3(-0.5f + fillAmount * 0.5f, 0f, 0f);
-        timerText.text = $"{Mathf.Max(0f, unlockDuration - unlockProgress):0.0}s";
 
         SetProgressVisible(visible && !isUnlocked);
     }
