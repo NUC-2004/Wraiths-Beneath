@@ -1,16 +1,23 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Goal : MonoBehaviour
 {
     [Header("Door Unlock")]
     public float unlockDuration = 3f;
-    public bool resetProgressWhenNotLooking = true;
 
-    private static GameObject progressRoot;
-    private static Image progressFill;
+    [Header("Progress Display")]
+    public Vector2 progressOffset = new Vector2(0f, 1.1f);
+    public Vector2 progressBarSize = new Vector2(1.2f, 0.08f);
+    public float timerYOffset = 0.18f;
+    public float timerCharacterSize = 0.12f;
+    public int progressSortingOrder = 1000;
+
+    private static Sprite progressSprite;
 
     private RunawayMinecartEffect viewController;
+    private GameObject progressRoot;
+    private Transform progressFillTransform;
+    private TextMesh timerText;
     private float unlockProgress;
     private bool isUnlocked;
     private bool playerInside;
@@ -36,12 +43,12 @@ public class Goal : MonoBehaviour
         {
             unlockProgress = Mathf.Min(unlockProgress + Time.deltaTime, unlockDuration);
         }
-        else if (resetProgressWhenNotLooking)
+        else
         {
             unlockProgress = 0f;
         }
 
-        UpdateProgressUi(isBeingWatched || unlockProgress > 0f);
+        UpdateProgressDisplay(isBeingWatched);
 
         if (unlockProgress >= unlockDuration)
         {
@@ -82,7 +89,7 @@ public class Goal : MonoBehaviour
     {
         isUnlocked = true;
         unlockProgress = unlockDuration;
-        UpdateProgressUi(false);
+        UpdateProgressDisplay(false);
         TryWin();
     }
 
@@ -99,58 +106,81 @@ public class Goal : MonoBehaviour
 
     private void EnsureProgressUi()
     {
-        if (progressRoot != null && progressFill != null)
+        if (progressRoot != null && progressFillTransform != null && timerText != null)
         {
             return;
         }
 
-        progressRoot = new GameObject("DoorUnlockProgressUI", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-        Canvas canvas = progressRoot.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 1000;
+        progressRoot = new GameObject($"{name}_DoorUnlockProgress");
+        progressRoot.transform.position = GetProgressWorldPosition();
 
-        CanvasScaler scaler = progressRoot.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
-
-        GameObject background = new GameObject("Background", typeof(RectTransform), typeof(Image));
+        GameObject background = new GameObject("Background");
         background.transform.SetParent(progressRoot.transform, false);
+        background.transform.localScale = new Vector3(progressBarSize.x, progressBarSize.y, 1f);
 
-        RectTransform backgroundRect = background.GetComponent<RectTransform>();
-        backgroundRect.anchorMin = new Vector2(0.5f, 0f);
-        backgroundRect.anchorMax = new Vector2(0.5f, 0f);
-        backgroundRect.pivot = new Vector2(0.5f, 0.5f);
-        backgroundRect.anchoredPosition = new Vector2(0f, 96f);
-        backgroundRect.sizeDelta = new Vector2(340f, 18f);
+        SpriteRenderer backgroundRenderer = background.AddComponent<SpriteRenderer>();
+        backgroundRenderer.sprite = GetProgressSprite();
+        backgroundRenderer.color = new Color(0f, 0f, 0f, 0.65f);
+        backgroundRenderer.sortingOrder = progressSortingOrder;
 
-        Image backgroundImage = background.GetComponent<Image>();
-        backgroundImage.color = new Color(0f, 0f, 0f, 0.65f);
-        backgroundImage.raycastTarget = false;
-
-        GameObject fill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        GameObject fill = new GameObject("Fill");
         fill.transform.SetParent(background.transform, false);
+        progressFillTransform = fill.transform;
 
-        RectTransform fillRect = fill.GetComponent<RectTransform>();
-        fillRect.anchorMin = Vector2.zero;
-        fillRect.anchorMax = Vector2.one;
-        fillRect.offsetMin = Vector2.zero;
-        fillRect.offsetMax = Vector2.zero;
+        SpriteRenderer fillRenderer = fill.AddComponent<SpriteRenderer>();
+        fillRenderer.sprite = GetProgressSprite();
+        fillRenderer.color = new Color(0.22f, 0.95f, 0.78f, 0.95f);
+        fillRenderer.sortingOrder = progressSortingOrder + 1;
 
-        progressFill = fill.GetComponent<Image>();
-        progressFill.color = new Color(0.22f, 0.95f, 0.78f, 0.95f);
-        progressFill.type = Image.Type.Filled;
-        progressFill.fillMethod = Image.FillMethod.Horizontal;
-        progressFill.fillOrigin = 0;
-        progressFill.fillAmount = 0f;
-        progressFill.raycastTarget = false;
+        GameObject text = new GameObject("Timer");
+        text.transform.SetParent(progressRoot.transform, false);
+        text.transform.localPosition = new Vector3(0f, timerYOffset, 0f);
+
+        timerText = text.AddComponent<TextMesh>();
+        timerText.anchor = TextAnchor.MiddleCenter;
+        timerText.alignment = TextAlignment.Center;
+        timerText.characterSize = timerCharacterSize;
+        timerText.fontSize = 32;
+        timerText.color = Color.white;
+
+        MeshRenderer textRenderer = text.GetComponent<MeshRenderer>();
+        textRenderer.sortingOrder = progressSortingOrder + 2;
+
+        SetProgressVisible(false);
     }
 
-    private void UpdateProgressUi(bool visible)
+    private void UpdateProgressDisplay(bool visible)
     {
         EnsureProgressUi();
-        progressFill.fillAmount = unlockDuration > 0f ? Mathf.Clamp01(unlockProgress / unlockDuration) : 1f;
+
+        float fillAmount = unlockDuration > 0f ? Mathf.Clamp01(unlockProgress / unlockDuration) : 1f;
+
+        progressRoot.transform.position = GetProgressWorldPosition();
+        progressFillTransform.localScale = new Vector3(fillAmount, 1f, 1f);
+        progressFillTransform.localPosition = new Vector3(-0.5f + fillAmount * 0.5f, 0f, 0f);
+        timerText.text = $"{Mathf.Max(0f, unlockDuration - unlockProgress):0.0}s";
+
         SetProgressVisible(visible && !isUnlocked);
+    }
+
+    private Vector3 GetProgressWorldPosition()
+    {
+        return transform.position + new Vector3(progressOffset.x, progressOffset.y, 0f);
+    }
+
+    private static Sprite GetProgressSprite()
+    {
+        if (progressSprite != null)
+        {
+            return progressSprite;
+        }
+
+        Texture2D texture = new Texture2D(1, 1);
+        texture.SetPixel(0, 0, Color.white);
+        texture.Apply();
+
+        progressSprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+        return progressSprite;
     }
 
     private void SetProgressVisible(bool visible)
@@ -158,6 +188,14 @@ public class Goal : MonoBehaviour
         if (progressRoot != null && progressRoot.activeSelf != visible)
         {
             progressRoot.SetActive(visible);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (progressRoot != null)
+        {
+            Destroy(progressRoot);
         }
     }
 }
