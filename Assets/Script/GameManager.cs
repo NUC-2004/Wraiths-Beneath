@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour
 
     private void PlayDeathSound()
     {
-        AudioClip clip = deathSequenceSound != null ? deathSequenceSound : deathSound;
+        AudioClip clip = deathSound != null ? deathSound : deathSequenceSound;
         if (clip == null)
         {
             clip = gameOverMusic;

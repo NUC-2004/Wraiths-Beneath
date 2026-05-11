@@ -50,7 +50,7 @@ MonoBehaviour:
   deathIllustration: {fileID: 0}
   deathIllustrationSprite: {fileID: 21300000, guid: 05054e3f334bb2e4e866ffb432c7cc59, type: 3}
   audioSource: {fileID: 0}
-  deathSound: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
-  deathSequenceSound: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
+  deathSound: {fileID: 8300000, guid: e90d8b05b40a27f4a88f366dcc3627bd, type: 3}
+  deathSequenceSound: {fileID: 8300000, guid: e90d8b05b40a27f4a88f366dcc3627bd, type: 3}
   winSound: {fileID: 0}
   gameOverMusic: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
