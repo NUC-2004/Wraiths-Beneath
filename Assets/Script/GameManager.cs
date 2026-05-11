@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,14 +11,18 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverUI;
     public GameObject gameWinUI;
     public GameObject Image;
+    public GameObject deathIllustration;
+    public Sprite deathIllustrationSprite;
 
     [Header("音效设置")]
     public AudioSource audioSource;
     public AudioClip deathSound;
+    public AudioClip deathSequenceSound;
     public AudioClip winSound;
     public AudioClip gameOverMusic;
 
     private bool isGameOver;
+    private AudioClip lastDeathClip;
     public bool IsGameOver => isGameOver;
 
     void Awake()
@@ -88,19 +93,21 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayTime);
 
-        if (Image != null)
+        GameObject deathImage = GetDeathIllustration();
+        if (deathImage != null)
         {
-            Image.SetActive(true);
-            PlayDeathSound();
+            deathImage.transform.SetAsLastSibling();
+            deathImage.SetActive(true);
         }
 
+        PlayDeathSound();
         StopGameplayAudio();
 
         yield return new WaitForSeconds(1f);
 
-        if (Image != null)
+        if (deathImage != null)
         {
-            Image.SetActive(false);
+            deathImage.SetActive(false);
         }
 
         if (gameOverUI != null)
@@ -210,9 +217,16 @@ public class GameManager : MonoBehaviour
 
     private void PlayDeathSound()
     {
-        if (audioSource != null && deathSound != null)
+        AudioClip clip = deathSequenceSound != null ? deathSequenceSound : deathSound;
+        if (clip == null)
         {
-            audioSource.PlayOneShot(deathSound);
+            clip = gameOverMusic;
+        }
+
+        if (audioSource != null && clip != null)
+        {
+            lastDeathClip = clip;
+            audioSource.PlayOneShot(clip);
         }
     }
 
@@ -231,9 +245,88 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (lastDeathClip == gameOverMusic && audioSource.isPlaying)
+        {
+            return;
+        }
+
         audioSource.clip = gameOverMusic;
         audioSource.loop = true;
         audioSource.Play();
+    }
+
+    private GameObject GetDeathIllustration()
+    {
+        if (Image != null)
+        {
+            return Image;
+        }
+
+        if (deathIllustration != null)
+        {
+            Image = deathIllustration;
+            return Image;
+        }
+
+        Image existingImage = FindExistingDeathIllustration();
+        if (existingImage != null)
+        {
+            Image = existingImage.gameObject;
+            return Image;
+        }
+
+        return CreateDeathIllustration();
+    }
+
+    private Image FindExistingDeathIllustration()
+    {
+        Image[] images = Resources.FindObjectsOfTypeAll<Image>();
+        foreach (Image candidate in images)
+        {
+            if (!candidate.gameObject.scene.IsValid() || candidate.sprite == null)
+            {
+                continue;
+            }
+
+            if (candidate.sprite.name.Contains("86117"))
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private GameObject CreateDeathIllustration()
+    {
+        if (deathIllustrationSprite == null)
+        {
+            return null;
+        }
+
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            return null;
+        }
+
+        GameObject imageObject = new GameObject("DeathIllustration", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(canvas.transform, false);
+
+        RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = Vector2.zero;
+
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = deathIllustrationSprite;
+        image.preserveAspect = false;
+        image.raycastTarget = false;
+
+        imageObject.SetActive(false);
+        Image = imageObject;
+        return imageObject;
     }
 
     private void StopGameplayAudio()

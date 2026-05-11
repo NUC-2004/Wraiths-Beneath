@@ -45,4 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverUI: {fileID: 0}
-  scaleSpeed: 2
+  gameWinUI: {fileID: 0}
+  Image: {fileID: 0}
+  deathIllustration: {fileID: 0}
+  deathIllustrationSprite: {fileID: 21300000, guid: 05054e3f334bb2e4e866ffb432c7cc59, type: 3}
+  audioSource: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
+  deathSequenceSound: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
+  winSound: {fileID: 0}
+  gameOverMusic: {fileID: 8300000, guid: fd8fc0cc628fdea449a8a896ac10568f, type: 3}
