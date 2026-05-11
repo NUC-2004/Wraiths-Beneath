@@ -171,6 +171,11 @@ public class Goal : MonoBehaviour
             doorRenderer = GetComponentInChildren<SpriteRenderer>();
         }
 
+        if (doorRenderer == null)
+        {
+            doorRenderer = GetComponentInParent<SpriteRenderer>();
+        }
+
         if (doorRenderer != null)
         {
             originalDoorColor = doorRenderer.color;
