@@ -12,6 +12,7 @@ public class MonsterAI : MonoBehaviour
     private NavMeshAgent agent;
     private Transform playerTarget;
     private Animator anim;
+    private bool isStopped;
 
     void Start()
     {
@@ -21,6 +22,17 @@ public class MonsterAI : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = moveSpeed;
+        if (agent.enabled)
+        {
+            agent.isStopped = false;
+        }
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.gravityScale = 0f;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
@@ -31,7 +43,7 @@ public class MonsterAI : MonoBehaviour
 
     void Update()
     {
-        if (playerTarget == null)
+        if (isStopped || playerTarget == null)
         {
             return;
         }
@@ -51,10 +63,33 @@ public class MonsterAI : MonoBehaviour
     public void SetMonsterSpeed(float newSpeed)
     {
         moveSpeed = newSpeed;
-        if (agent != null)
+        if (agent != null && !isStopped)
         {
             agent.speed = moveSpeed;
         }
+    }
+
+    public void StopChasing()
+    {
+        isStopped = true;
+
+        if (agent == null)
+        {
+            return;
+        }
+
+        if (!agent.enabled)
+        {
+            return;
+        }
+
+        if (agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+
+        agent.isStopped = true;
     }
 
     private void UpdateAnimationDirection()
@@ -91,7 +126,7 @@ public class MonsterAI : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && GameManager.Instance != null)
+        if (!isStopped && other.CompareTag("Player") && GameManager.Instance != null)
         {
             GameManager.Instance.PlayerLost();
         }

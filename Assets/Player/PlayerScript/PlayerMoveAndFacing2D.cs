@@ -43,6 +43,28 @@ public class PlayerMoveAndFacing2D : MonoBehaviour
         rb.velocity = moveInput * speed;
     }
 
+    public void StopMovement()
+    {
+        moveInput = Vector2.zero;
+        stepTimer = 0f;
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        if (footstepSource != null)
+        {
+            footstepSource.Stop();
+        }
+
+        if (switcher != null)
+        {
+            switcher.SetMoving(false);
+        }
+    }
+
     private void ConfigureRigidbody()
     {
         rb.gravityScale = 0f;

@@ -26,6 +26,17 @@ public class PlayerController : MonoBehaviour
         rb.velocity = movement * moveSpeed;
     }
 
+    public void StopMovement()
+    {
+        movement = Vector2.zero;
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
     private void ConfigureRigidbody()
     {
         rb.gravityScale = 0f;

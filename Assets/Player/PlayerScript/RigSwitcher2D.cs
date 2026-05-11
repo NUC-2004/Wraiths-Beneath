@@ -57,6 +57,7 @@ public class RigSwitcher2D : MonoBehaviour
 
     public void SetDead()
     {
+        isMoving = false;
         SetRigActive(rigLeft, false);
         SetRigActive(rigRight, false);
         SetRigActive(rigUp, false);

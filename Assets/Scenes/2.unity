@@ -4713,7 +4713,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectRange: 3
-  attackRange: 1
   proximitySource: {fileID: 2065434563}
 --- !u!95 &2065434565
 Animator:

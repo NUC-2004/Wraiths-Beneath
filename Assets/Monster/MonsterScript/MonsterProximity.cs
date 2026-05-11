@@ -11,6 +11,16 @@ public class MonsterProximity : MonoBehaviour
     private Transform player;
     private bool canPlay = true;
 
+    void Awake()
+    {
+        if (proximitySource == null)
+        {
+            proximitySource = GetComponent<AudioSource>();
+        }
+
+        ConfigureAudioSource();
+    }
+
     void Start()
     {
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -22,6 +32,12 @@ public class MonsterProximity : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+        {
+            StopProximitySound();
+            return;
+        }
+
         if (!canPlay || player == null || proximitySource == null)
         {
             StopSourceIfPlaying();
@@ -43,6 +59,23 @@ public class MonsterProximity : MonoBehaviour
     {
         canPlay = false;
         StopSourceIfPlaying();
+    }
+
+    private void OnDisable()
+    {
+        StopSourceIfPlaying();
+    }
+
+    private void ConfigureAudioSource()
+    {
+        if (proximitySource == null)
+        {
+            return;
+        }
+
+        proximitySource.playOnAwake = false;
+        proximitySource.loop = true;
+        proximitySource.Stop();
     }
 
     private void PlaySourceIfStopped()

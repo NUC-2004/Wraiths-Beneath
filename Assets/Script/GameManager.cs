@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public AudioClip gameOverMusic;
 
     private bool isGameOver;
+    public bool IsGameOver => isGameOver;
 
     void Awake()
     {
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
 
-        DisablePlayer(player, true);
+        EndGameplay(player, true);
 
         if (maskEffect != null && player != null)
         {
@@ -60,18 +61,19 @@ public class GameManager : MonoBehaviour
         }
 
         isGameOver = true;
-        PlayWinSound();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dest = GameObject.FindGameObjectWithTag("Destination");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
+
+        EndGameplay(player, false);
+        PlayWinSound();
 
         if (player == null || dest == null || maskEffect == null)
         {
             return;
         }
 
-        DisablePlayer(player, false);
         maskEffect.StartGameOverSequence(dest.transform.position);
         StartCoroutine(WinSequence(player));
     }
@@ -91,8 +93,6 @@ public class GameManager : MonoBehaviour
             Image.SetActive(true);
             PlayDeathSound();
         }
-
-        StopGameplayAudio();
 
         yield return new WaitForSeconds(1f);
 
@@ -142,7 +142,29 @@ public class GameManager : MonoBehaviour
         PlayerMoveAndFacing2D movement = player.GetComponent<PlayerMoveAndFacing2D>();
         if (movement != null)
         {
+            movement.StopMovement();
             movement.enabled = false;
+        }
+
+        PlayerController controller = player.GetComponent<PlayerController>();
+        if (controller != null)
+        {
+            controller.StopMovement();
+            controller.enabled = false;
+        }
+
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+
+        RigSwitcher2D switcher = player.GetComponent<RigSwitcher2D>();
+        if (switcher != null)
+        {
+            switcher.SetMoving(false);
         }
 
         if (!showDeadRig)
@@ -150,10 +172,25 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        RigSwitcher2D switcher = player.GetComponent<RigSwitcher2D>();
         if (switcher != null)
         {
             switcher.SetDead();
+        }
+    }
+
+    private void EndGameplay(GameObject player, bool showDeadRig)
+    {
+        DisablePlayer(player, showDeadRig);
+        StopMonsters();
+        StopGameplayAudio();
+    }
+
+    private void StopMonsters()
+    {
+        MonsterAI[] monsters = FindObjectsOfType<MonsterAI>();
+        foreach (MonsterAI monster in monsters)
+        {
+            monster.StopChasing();
         }
     }
 
