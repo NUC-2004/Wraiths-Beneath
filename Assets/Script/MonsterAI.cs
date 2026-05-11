@@ -6,6 +6,7 @@ public class MonsterAI : MonoBehaviour
 {
     [Header("移动设置")]
     public float moveSpeed = 3.5f;
+    public float sightBoostMultiplier = 1.5f;
 
     private const string DirectionParameter = "dir";
 
@@ -13,6 +14,7 @@ public class MonsterAI : MonoBehaviour
     private Transform playerTarget;
     private Animator anim;
     private bool isStopped;
+    private bool hasSightBoost;
 
     void Start()
     {
@@ -21,7 +23,7 @@ public class MonsterAI : MonoBehaviour
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.speed = moveSpeed;
+        ApplyAgentSpeed();
         if (agent.enabled)
         {
             agent.isStopped = false;
@@ -48,7 +50,7 @@ public class MonsterAI : MonoBehaviour
             return;
         }
 
-        agent.speed = moveSpeed;
+        ApplyAgentSpeed();
 
         if (agent.isOnNavMesh)
         {
@@ -63,10 +65,14 @@ public class MonsterAI : MonoBehaviour
     public void SetMonsterSpeed(float newSpeed)
     {
         moveSpeed = newSpeed;
-        if (agent != null && !isStopped)
-        {
-            agent.speed = moveSpeed;
-        }
+        ApplyAgentSpeed();
+    }
+
+    public void SetSightBoost(bool boosted, float multiplier)
+    {
+        hasSightBoost = boosted;
+        sightBoostMultiplier = Mathf.Max(1f, multiplier);
+        ApplyAgentSpeed();
     }
 
     public void StopChasing()
@@ -86,6 +92,16 @@ public class MonsterAI : MonoBehaviour
         agent.ResetPath();
         agent.velocity = Vector3.zero;
         agent.isStopped = true;
+    }
+
+    private void ApplyAgentSpeed()
+    {
+        if (agent == null || isStopped)
+        {
+            return;
+        }
+
+        agent.speed = moveSpeed * (hasSightBoost ? sightBoostMultiplier : 1f);
     }
 
     private void UpdateAnimationDirection()

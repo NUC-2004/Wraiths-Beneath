@@ -23,6 +23,11 @@ public class RunawayMinecartEffect : MonoBehaviour
     public float revealRadius = 0.18f;
     public float edgeSoftness = 0.05f;
 
+    [Header("玩家入镜惩罚")]
+    public Transform player;
+    public bool boostMonstersWhenPlayerVisible = true;
+    public float monsterSightBoostMultiplier = 1.5f;
+
     private readonly Vector2 startPosition = new Vector2(0.5f, 0.7f);
     private readonly float normalTurnResistance = 0.85f;
 
@@ -32,12 +37,15 @@ public class RunawayMinecartEffect : MonoBehaviour
     private float currentMomentum = 1.0f;
     private bool isRunaway;
     private bool isResetting;
+    private bool isPlayerInView;
 
     void Start()
     {
         ResolveMaskMaterial();
+        ResolvePlayer();
         position = startPosition;
         UpdateMask();
+        UpdateMonsterSightBoost();
         StartCoroutine(CheckRunawayState());
     }
 
@@ -45,6 +53,7 @@ public class RunawayMinecartEffect : MonoBehaviour
     {
         if (isResetting)
         {
+            UpdateMonsterSightBoost();
             return;
         }
 
@@ -52,6 +61,7 @@ public class RunawayMinecartEffect : MonoBehaviour
         ApplyRunawayPhysics();
         UpdatePosition();
         UpdateMask();
+        UpdateMonsterSightBoost();
     }
 
     public void ApplyExternalForce(Vector2 force)
@@ -100,6 +110,20 @@ public class RunawayMinecartEffect : MonoBehaviour
         if (image != null && image.material != null)
         {
             maskMaterial = image.material;
+        }
+    }
+
+    private void ResolvePlayer()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            player = playerObject.transform;
         }
     }
 
@@ -218,6 +242,49 @@ public class RunawayMinecartEffect : MonoBehaviour
         maskMaterial.SetFloat("_Softness", edgeSoftness);
     }
 
+    private void UpdateMonsterSightBoost()
+    {
+        bool shouldBoost = boostMonstersWhenPlayerVisible && IsPlayerInsideView();
+        if (shouldBoost == isPlayerInView)
+        {
+            return;
+        }
+
+        isPlayerInView = shouldBoost;
+        MonsterAI[] monsters = FindObjectsOfType<MonsterAI>();
+        foreach (MonsterAI monster in monsters)
+        {
+            monster.SetSightBoost(isPlayerInView, monsterSightBoostMultiplier);
+        }
+    }
+
+    private bool IsPlayerInsideView()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+        {
+            return false;
+        }
+
+        if (player == null)
+        {
+            ResolvePlayer();
+        }
+
+        if (player == null || Camera.main == null)
+        {
+            return false;
+        }
+
+        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(player.position);
+        if (viewportPoint.z < 0f)
+        {
+            return false;
+        }
+
+        Vector2 playerViewportPosition = new Vector2(viewportPoint.x, viewportPoint.y);
+        return Vector2.Distance(playerViewportPosition, position) <= revealRadius;
+    }
+
     private IEnumerator MoveToPlayerRoutine(Vector2 targetPos)
     {
         float elapsed = 0f;
@@ -229,11 +296,13 @@ public class RunawayMinecartEffect : MonoBehaviour
             elapsed += Time.deltaTime;
             position = Vector2.Lerp(startPos, targetPos, elapsed / duration);
             UpdateMask();
+            UpdateMonsterSightBoost();
             yield return null;
         }
 
         position = targetPos;
         UpdateMask();
+        UpdateMonsterSightBoost();
     }
 
     private IEnumerator GameOverRoutine(Vector2 targetPos)
@@ -247,6 +316,7 @@ public class RunawayMinecartEffect : MonoBehaviour
             moveElapsed += Time.deltaTime;
             position = Vector2.Lerp(startPos, targetPos, moveElapsed / moveDuration);
             UpdateMask();
+            UpdateMonsterSightBoost();
             yield return null;
         }
 
@@ -262,6 +332,7 @@ public class RunawayMinecartEffect : MonoBehaviour
             expandElapsed += Time.deltaTime;
             revealRadius = Mathf.Lerp(startRadius, targetRadius, expandElapsed / expandDuration);
             UpdateMask();
+            UpdateMonsterSightBoost();
             yield return null;
         }
     }
