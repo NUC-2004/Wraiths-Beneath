@@ -8,22 +8,27 @@ public class RigSwitcher2D : MonoBehaviour
     public GameObject rigDown;
     public GameObject rigDead;
 
-    Animator animLeft;
-    Animator animRight;
-    Animator animUp;
-    Animator animDown;
-
     public enum Facing { Left, Right, Up, Down }
     public Facing startFacing = Facing.Down;
 
-    Facing current;
+    private Animator animLeft;
+    private Animator animRight;
+    private Animator animUp;
+    private Animator animDown;
+    private Facing current;
+    private bool isMoving;
 
     void Awake()
     {
-        animLeft = rigLeft ? rigLeft.GetComponent<Animator>() : null;
-        animRight = rigRight ? rigRight.GetComponent<Animator>() : null;
-        animUp = rigUp ? rigUp.GetComponent<Animator>() : null;
-        animDown = rigDown ? rigDown.GetComponent<Animator>() : null;
+        animLeft = GetAnimator(rigLeft);
+        animRight = GetAnimator(rigRight);
+        animUp = GetAnimator(rigUp);
+        animDown = GetAnimator(rigDown);
+
+        if (rigDead != null)
+        {
+            rigDead.SetActive(false);
+        }
 
         SetFacing(startFacing, true);
         SetMoving(false);
@@ -31,41 +36,74 @@ public class RigSwitcher2D : MonoBehaviour
 
     public void SetFacing(Facing facing, bool force = false)
     {
-        if (!force && facing == current) return;
-        current = facing;
+        if (!force && facing == current)
+        {
+            return;
+        }
 
-        if (rigLeft) rigLeft.SetActive(facing == Facing.Left);
-        if (rigRight) rigRight.SetActive(facing == Facing.Right);
-        if (rigUp) rigUp.SetActive(facing == Facing.Up);
-        if (rigDown) rigDown.SetActive(facing == Facing.Down);
+        current = facing;
+        SetRigActive(rigLeft, facing == Facing.Left);
+        SetRigActive(rigRight, facing == Facing.Right);
+        SetRigActive(rigUp, facing == Facing.Up);
+        SetRigActive(rigDown, facing == Facing.Down);
+        ApplyMovingState();
     }
 
     public void SetMoving(bool moving)
     {
-        Animator a = GetCurrentAnimator();
-        if (a != null) a.enabled = moving;
+        isMoving = moving;
+        ApplyMovingState();
     }
+
     public void SetDead()
     {
-        // 关闭所有移动方向的 Rig
-        if (rigLeft) rigLeft.SetActive(false);
-        if (rigRight) rigRight.SetActive(false);
-        if (rigUp) rigUp.SetActive(false);
-        if (rigDown) rigDown.SetActive(false);
+        SetRigActive(rigLeft, false);
+        SetRigActive(rigRight, false);
+        SetRigActive(rigUp, false);
+        SetRigActive(rigDown, false);
 
-        // 激活死亡 Rig
-        if (rigDead) rigDead.SetActive(true);
+        if (rigDead != null)
+        {
+            rigDead.SetActive(true);
+        }
     }
 
-    Animator GetCurrentAnimator()
+    private void ApplyMovingState()
+    {
+        Animator animator = GetCurrentAnimator();
+        if (animator != null)
+        {
+            animator.enabled = isMoving;
+        }
+    }
+
+    private Animator GetCurrentAnimator()
     {
         switch (current)
         {
-            case Facing.Left: return animLeft;
-            case Facing.Right: return animRight;
-            case Facing.Up: return animUp;
-            case Facing.Down: return animDown;
+            case Facing.Left:
+                return animLeft;
+            case Facing.Right:
+                return animRight;
+            case Facing.Up:
+                return animUp;
+            case Facing.Down:
+                return animDown;
+            default:
+                return null;
         }
-        return null;
+    }
+
+    private static Animator GetAnimator(GameObject rig)
+    {
+        return rig != null ? rig.GetComponent<Animator>() : null;
+    }
+
+    private static void SetRigActive(GameObject rig, bool active)
+    {
+        if (rig != null)
+        {
+            rig.SetActive(active);
+        }
     }
 }

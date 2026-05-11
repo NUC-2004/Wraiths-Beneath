@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -10,135 +9,202 @@ public class GameManager : MonoBehaviour
     [Header("UI 元素")]
     public GameObject gameOverUI;
     public GameObject gameWinUI;
-    public GameObject Image; // 死亡大图
+    public GameObject Image;
 
     [Header("音效设置")]
-    public AudioSource audioSource; 
-    public AudioClip deathSound;    
-    public AudioClip winSound;      
-    public AudioClip gameOverMusic; 
+    public AudioSource audioSource;
+    public AudioClip deathSound;
+    public AudioClip winSound;
+    public AudioClip gameOverMusic;
 
-    private bool isGameOver = false;
+    private bool isGameOver;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            return;
+        }
+
+        Destroy(gameObject);
     }
 
     public void PlayerLost()
     {
-        if (isGameOver) return;
+        if (isGameOver)
+        {
+            return;
+        }
+
         isGameOver = true;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
 
-        if (player != null)
-        {
-            var pc = player.GetComponent<PlayerMoveAndFacing2D>();
-            if (pc != null) pc.enabled = false;
-
-            var switcher = player.GetComponent<RigSwitcher2D>();
-            if (switcher != null) switcher.SetDead();
-
-            // --- 原本在这里播放的 deathSound 移走了，为了和图片同步 ---
-        }
+        DisablePlayer(player, true);
 
         if (maskEffect != null && player != null)
         {
             maskEffect.StartGameOverSequence(player.transform.position);
         }
-    
-        // 延迟显示图片和播放音效
-        StartCoroutine(ShowUIDelayed(1f)); 
-    }
 
-    IEnumerator ShowUIDelayed(float delayTime)
-    {
-        // 1. 等待第一段延迟
-        yield return new WaitForSeconds(delayTime);
-
-        // --- 此时：图片展示，声音同步响起 ---
-        if (Image != null) 
-        {
-            Image.SetActive(true);
-            
-            // 在图片显示的瞬间，播放死亡音效
-            if (audioSource != null && deathSound != null)
-            {
-                audioSource.PlayOneShot(deathSound);
-            }
-        }
-
-        // 清理现场其他背景音乐
-        if (MusicManager.Instance != null && MusicManager.Instance.musicSource != null)
-            MusicManager.Instance.musicSource.Stop();
-
-        MonsterProximity[] allGhosts = FindObjectsOfType<MonsterProximity>();
-        foreach (MonsterProximity ghost in allGhosts) ghost.StopProximitySound();
-
-        AudioSource[] allSources = FindObjectsOfType<AudioSource>();
-        foreach (AudioSource source in allSources)
-            if (source != audioSource) source.Stop();
-
-        // 2. 图片显示 1 秒
-        yield return new WaitForSeconds(1f);
-
-        // 3. --- 此时：图片消失，弹出正式 UI ---
-        if (Image != null) Image.SetActive(false); 
-
-        if (gameOverUI != null) gameOverUI.SetActive(true);
-
-        // 播放失败后的背景循环音乐
-        if (gameOverMusic != null && audioSource != null)
-        {
-            audioSource.clip = gameOverMusic;
-            audioSource.loop = true;
-            audioSource.Play();
-        }
+        StartCoroutine(ShowGameOverSequence(1f));
     }
 
     public void PlayerWin()
     {
-        if (isGameOver) return;
-        isGameOver = true;
-
-        // 胜利音量调小到 0.2
-        if (audioSource != null && winSound != null) 
+        if (isGameOver)
         {
-            audioSource.PlayOneShot(winSound, 0.2f); 
+            return;
         }
+
+        isGameOver = true;
+        PlayWinSound();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject dest = GameObject.FindGameObjectWithTag("Destination");
         RunawayMinecartEffect maskEffect = FindObjectOfType<RunawayMinecartEffect>();
 
-        if (player != null && dest != null && maskEffect != null)
+        if (player == null || dest == null || maskEffect == null)
         {
-            var pc = player.GetComponent<PlayerMoveAndFacing2D>();
-            if (pc != null) pc.enabled = false;
-            maskEffect.StartGameOverSequence(dest.transform.position);
-            StartCoroutine(WinSequence(player));
+            return;
         }
-    }
 
-    IEnumerator WinSequence(GameObject player)
-    {
-        float duration = 1.0f;
-        float elapsed = 0f;
-        Vector3 initialScale = player.transform.localScale;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            if (player != null) player.transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, elapsed / duration);
-            yield return null;
-        }
-        if (gameWinUI != null) gameWinUI.SetActive(true);
+        DisablePlayer(player, false);
+        maskEffect.StartGameOverSequence(dest.transform.position);
+        StartCoroutine(WinSequence(player));
     }
 
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator ShowGameOverSequence(float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+
+        if (Image != null)
+        {
+            Image.SetActive(true);
+            PlayDeathSound();
+        }
+
+        StopGameplayAudio();
+
+        yield return new WaitForSeconds(1f);
+
+        if (Image != null)
+        {
+            Image.SetActive(false);
+        }
+
+        if (gameOverUI != null)
+        {
+            gameOverUI.SetActive(true);
+        }
+
+        PlayGameOverMusic();
+    }
+
+    private IEnumerator WinSequence(GameObject player)
+    {
+        float duration = 1.0f;
+        float elapsed = 0f;
+        Vector3 initialScale = player.transform.localScale;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            if (player != null)
+            {
+                player.transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, elapsed / duration);
+            }
+
+            yield return null;
+        }
+
+        if (gameWinUI != null)
+        {
+            gameWinUI.SetActive(true);
+        }
+    }
+
+    private void DisablePlayer(GameObject player, bool showDeadRig)
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        PlayerMoveAndFacing2D movement = player.GetComponent<PlayerMoveAndFacing2D>();
+        if (movement != null)
+        {
+            movement.enabled = false;
+        }
+
+        if (!showDeadRig)
+        {
+            return;
+        }
+
+        RigSwitcher2D switcher = player.GetComponent<RigSwitcher2D>();
+        if (switcher != null)
+        {
+            switcher.SetDead();
+        }
+    }
+
+    private void PlayDeathSound()
+    {
+        if (audioSource != null && deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
+    }
+
+    private void PlayWinSound()
+    {
+        if (audioSource != null && winSound != null)
+        {
+            audioSource.PlayOneShot(winSound, 0.2f);
+        }
+    }
+
+    private void PlayGameOverMusic()
+    {
+        if (gameOverMusic == null || audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.clip = gameOverMusic;
+        audioSource.loop = true;
+        audioSource.Play();
+    }
+
+    private void StopGameplayAudio()
+    {
+        if (MusicManager.Instance != null && MusicManager.Instance.musicSource != null)
+        {
+            MusicManager.Instance.musicSource.Stop();
+        }
+
+        MonsterProximity[] allGhosts = FindObjectsOfType<MonsterProximity>();
+        foreach (MonsterProximity ghost in allGhosts)
+        {
+            ghost.StopProximitySound();
+        }
+
+        AudioSource[] allSources = FindObjectsOfType<AudioSource>();
+        foreach (AudioSource source in allSources)
+        {
+            if (source != audioSource)
+            {
+                source.Stop();
+            }
+        }
     }
 }
