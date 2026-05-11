@@ -8,13 +8,20 @@ public class Goal : MonoBehaviour
     [Header("Progress Display")]
     public Vector2 progressOffset = new Vector2(0f, 0.45f);
     public Vector2 progressBarSize = new Vector2(1.2f, 0.08f);
+    public Color progressFillColor = new Color(0.95f, 0.12f, 0.08f, 0.95f);
     public int progressSortingOrder = 1000;
+
+    [Header("Door Visual")]
+    public SpriteRenderer doorRenderer;
+    public Color unlockedDoorTint = new Color(0.65f, 1f, 0.65f, 1f);
+    [Range(0f, 1f)] public float unlockedTintStrength = 0.35f;
 
     private static Sprite progressSprite;
 
     private RunawayMinecartEffect viewController;
     private GameObject progressRoot;
     private Transform progressFillTransform;
+    private Color originalDoorColor = Color.white;
     private float unlockProgress;
     private bool isUnlocked;
     private bool playerInside;
@@ -23,6 +30,7 @@ public class Goal : MonoBehaviour
     private void Start()
     {
         viewController = FindObjectOfType<RunawayMinecartEffect>();
+        ResolveDoorRenderer();
         EnsureProgressUi();
         SetProgressVisible(false);
     }
@@ -86,6 +94,7 @@ public class Goal : MonoBehaviour
     {
         isUnlocked = true;
         unlockProgress = unlockDuration;
+        ApplyUnlockedDoorTint();
         UpdateProgressDisplay(false);
         TryWin();
     }
@@ -126,7 +135,7 @@ public class Goal : MonoBehaviour
 
         SpriteRenderer fillRenderer = fill.AddComponent<SpriteRenderer>();
         fillRenderer.sprite = GetProgressSprite();
-        fillRenderer.color = new Color(0.22f, 0.95f, 0.78f, 0.95f);
+        fillRenderer.color = progressFillColor;
         fillRenderer.sortingOrder = progressSortingOrder + 1;
 
         SetProgressVisible(false);
@@ -148,6 +157,37 @@ public class Goal : MonoBehaviour
     private Vector3 GetProgressWorldPosition()
     {
         return transform.position + new Vector3(progressOffset.x, progressOffset.y, 0f);
+    }
+
+    private void ResolveDoorRenderer()
+    {
+        if (doorRenderer == null)
+        {
+            doorRenderer = GetComponent<SpriteRenderer>();
+        }
+
+        if (doorRenderer == null)
+        {
+            doorRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+
+        if (doorRenderer != null)
+        {
+            originalDoorColor = doorRenderer.color;
+        }
+    }
+
+    private void ApplyUnlockedDoorTint()
+    {
+        if (doorRenderer == null)
+        {
+            ResolveDoorRenderer();
+        }
+
+        if (doorRenderer != null)
+        {
+            doorRenderer.color = Color.Lerp(originalDoorColor, unlockedDoorTint, unlockedTintStrength);
+        }
     }
 
     private static Sprite GetProgressSprite()
