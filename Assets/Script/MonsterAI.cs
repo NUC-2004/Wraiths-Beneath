@@ -106,6 +106,18 @@ public class MonsterAI : MonoBehaviour
             return;
         }
 
+        if (moveSpeed <= 0f)
+        {
+            agent.speed = 0f;
+            if (agent.enabled && agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+                agent.velocity = Vector3.zero;
+            }
+
+            return;
+        }
+
         if (hasSightBoost)
         {
             float playerSpeed = GetPlayerSpeed();
