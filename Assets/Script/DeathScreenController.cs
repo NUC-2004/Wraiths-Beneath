@@ -31,6 +31,8 @@ public class DeathScreenController : MonoBehaviour
 
     void OnDisable()
     {
+        AudioState.ResumeGlobalAudio();
+
         if (videoPlayer != null)
         {
             videoPlayer.loopPointReached -= OnVideoFinished;
@@ -39,7 +41,7 @@ public class DeathScreenController : MonoBehaviour
 
     public void ManualReturnToMenu(string menuSceneName)
     {
-        AudioListener.pause = false;
+        AudioState.ResumeGlobalAudio();
         SceneManager.LoadScene(menuSceneName);
     }
 

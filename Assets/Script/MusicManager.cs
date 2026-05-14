@@ -35,6 +35,8 @@ public class MusicManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        AudioState.ResumeGlobalAudio();
+
         if (musicSource == null)
         {
             return;

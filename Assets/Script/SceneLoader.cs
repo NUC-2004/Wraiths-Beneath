@@ -16,6 +16,7 @@ public class SceneLoader : MonoBehaviour
             return;
         }
 
+        AudioState.ResumeGlobalAudio();
         SceneManager.LoadScene(sceneName);
     }
 
@@ -56,6 +57,7 @@ public class SceneLoader : MonoBehaviour
             return;
         }
 
+        AudioState.ResumeGlobalAudio();
         SceneManager.LoadScene(sceneIndex);
     }
 

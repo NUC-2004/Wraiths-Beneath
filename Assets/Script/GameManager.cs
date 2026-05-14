@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+        AudioState.ResumeGlobalAudio();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

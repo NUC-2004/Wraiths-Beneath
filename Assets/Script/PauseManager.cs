@@ -58,6 +58,7 @@ public class PauseManager : MonoBehaviour
     protected void LoadScene(string sceneName)
     {
         Time.timeScale = 1f;
+        AudioState.ResumeGlobalAudio();
         SceneManager.LoadScene(sceneName);
     }
 
