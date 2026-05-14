@@ -6,7 +6,8 @@ public class MonsterAI : MonoBehaviour
 {
     [Header("移动设置")]
     public float moveSpeed = 3.5f;
-    public float sightBoostMultiplier = 1.5f;
+    public float sightBoostMultiplier = 3.5f;
+    public float minimumSightBoostSpeed = 3.5f;
 
     private const string DirectionParameter = "dir";
 
@@ -101,7 +102,13 @@ public class MonsterAI : MonoBehaviour
             return;
         }
 
-        agent.speed = moveSpeed * (hasSightBoost ? sightBoostMultiplier : 1f);
+        if (hasSightBoost)
+        {
+            agent.speed = Mathf.Max(moveSpeed * sightBoostMultiplier, minimumSightBoostSpeed);
+            return;
+        }
+
+        agent.speed = moveSpeed;
     }
 
     private void UpdateAnimationDirection()
