@@ -26,7 +26,7 @@ public class RunawayMinecartEffect : MonoBehaviour
     [Header("玩家入镜惩罚")]
     public Transform player;
     public bool boostMonstersWhenPlayerVisible = true;
-    public float monsterSightBoostMultiplier = 3.5f;
+    public float monsterSightBoostMultiplier = 1.1f;
 
     private readonly Vector2 startPosition = new Vector2(0.5f, 0.7f);
     private readonly float normalTurnResistance = 0.85f;

@@ -6,13 +6,15 @@ public class MonsterAI : MonoBehaviour
 {
     [Header("移动设置")]
     public float moveSpeed = 3.5f;
-    public float sightBoostMultiplier = 3.5f;
-    public float minimumSightBoostSpeed = 3.5f;
+    public float sightBoostMultiplier = 1.1f;
+    public float sightBoostPlayerSpeedMargin = 0.25f;
 
     private const string DirectionParameter = "dir";
 
     private NavMeshAgent agent;
     private Transform playerTarget;
+    private PlayerMoveAndFacing2D playerMovement;
+    private PlayerController playerController;
     private Animator anim;
     private bool isStopped;
     private bool hasSightBoost;
@@ -41,6 +43,8 @@ public class MonsterAI : MonoBehaviour
         if (playerObj != null)
         {
             playerTarget = playerObj.transform;
+            playerMovement = playerObj.GetComponent<PlayerMoveAndFacing2D>();
+            playerController = playerObj.GetComponent<PlayerController>();
         }
     }
 
@@ -104,11 +108,28 @@ public class MonsterAI : MonoBehaviour
 
         if (hasSightBoost)
         {
-            agent.speed = Mathf.Max(moveSpeed * sightBoostMultiplier, minimumSightBoostSpeed);
+            float playerSpeed = GetPlayerSpeed();
+            float boostedSpeed = moveSpeed * sightBoostMultiplier;
+            agent.speed = Mathf.Max(boostedSpeed, playerSpeed + sightBoostPlayerSpeedMargin);
             return;
         }
 
         agent.speed = moveSpeed;
+    }
+
+    private float GetPlayerSpeed()
+    {
+        if (playerMovement != null)
+        {
+            return playerMovement.speed;
+        }
+
+        if (playerController != null)
+        {
+            return playerController.moveSpeed;
+        }
+
+        return 2f;
     }
 
     private void UpdateAnimationDirection()
